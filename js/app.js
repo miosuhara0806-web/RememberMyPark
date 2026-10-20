@@ -11,6 +11,34 @@
   };
   const icon = (key) => `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[key]}</svg>`;
 
+  function renderGuide(id, guide) {
+    const container = $(id);
+    const image = container.querySelector(".bunny-image");
+    const fallback = container.querySelector(".bunny-fallback");
+    container.querySelector(".bunny-message").textContent = guide.message;
+    image.alt = guide.alt;
+    // 同じ画像を再表示する場合は、読み込みとちらつきを増やさない。
+    if (image.getAttribute("src") === guide.image) return;
+    container.dataset.guideState = "loading";
+    image.hidden = true;
+    fallback.hidden = false;
+    image.onload = () => {
+      if (image.getAttribute("src") !== guide.image) return;
+      image.hidden = false;
+      fallback.hidden = true;
+      container.dataset.guideState = "ready";
+    };
+    image.onerror = () => {
+      if (image.getAttribute("src") !== guide.image) return;
+      image.hidden = true;
+      fallback.hidden = false;
+      container.dataset.guideState = "missing";
+    };
+    image.src = guide.image;
+  }
+
+  renderGuide("map-guide", config.guide);
+
   config.attractions.forEach((item) => {
     const hotspot = document.createElement("a");
     hotspot.href = `#${item.id}`;
@@ -88,6 +116,7 @@
       $("facility-description").textContent = item.description;
       $("facility-number").textContent = `ATTRACTION ${item.number} / ${item.english}`;
       $("facility-icon").innerHTML = icon(item.icon);
+      renderGuide("facility-guide", item.guide);
       document.title = `${item.name}｜Remember My Park`;
     } else {
       document.title = "Remember My Park｜眠っていた遊園地";

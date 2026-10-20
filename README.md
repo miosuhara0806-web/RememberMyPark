@@ -5,7 +5,18 @@ A puzzle game about restoring a forgotten amusement park.
 
 眠っていた遊園地を、パズルで少しずつ蘇らせるブラウザゲーム。可愛く幻想的で、少し切ない世界を目指します。ホラー要素はありません。
 
-現在は**第1段階のUIリテイク確認用の試作**です。正式画像でのPC検収とGitHub Pagesでのスマートフォン表示確認が完了し、明るいパステルカラーのUIへ変更しました。デザインの最終採用はユーザー検収後です。HTML / CSS / JavaScriptのみで動作し、外部ライブラリ・ビルド・インストール・外部CDNへの接続は不要です。
+現在は**第2段階・星うさぎ初登場の表示確認用の試作**です。第1段階のマップ・部分復活演出・ポップ版UIはユーザー検収済み。正式な星うさぎ画像4枚と、場面ごとの短い案内セリフを追加しました。HTML / CSS / JavaScriptのみで動作し、外部ライブラリ・ビルド・インストール・外部CDNへの接続は不要です。
+
+### 星うさぎの初登場
+
+- 全景マップの直下：基本衣装と「まだ眠っている乗り物があるよ。どこから直してみようか？」を表示。マップ画像に重ねず、選択操作を遮りません。
+- 施設画面：施設の専用衣装と指定の案内セリフを表示。PCでは吹き出しの隣、スマートフォンでは吹き出しの上に配置。
+- 画像はユーザー制作の正式な透過PNGをそのまま使用。新規生成・描き直し・トリミング・キャラクターアニメーションは行いません。縦横比を保って全体表示します。
+- パス・画像の代替テキスト・セリフは `js/config.js` の `guide`（マップ）と、各施設の `guide` に集約。
+- 読み込めない画像は非表示にし、「星うさぎの画像を準備中」と表示。セリフ・施設選択・マップに戻る操作は引き続き使えます。画像追加・差し替え後はページを再読み込みしてください。
+- 衣装は各画面に固定で対応します。会話送り、プレイヤーによる衣装切り替え、パズルやセーブは実装していません。
+
+確認記録は `docs/star-bunny-checks.md`。今回は星うさぎの表示とセリフのユーザー確認で終了し、パズル実装には進みません。
 
 ### UIリテイク
 
@@ -13,9 +24,9 @@ A puzzle game about restoring a forgotten amusement park.
 - 星付きの飾り枠、リボン見出し、スカラップの縁、チケット風の施設カード。
 - 施設カラーはメリーゴーランド＝ピンク、観覧車＝ラベンダー・水色、ミニトレイン＝ミント。マップラベル・施設カード・復活スイッチ・施設仮画面に共通適用。
 - 丸ゴシックのZen Maru Gothic Mediumをローカル同梱。通信先はこのサイトのみで、フォント取得中も代替フォントで表示します。
-- 施設画面の `.character-space` は後から星うさぎの正式立ち絵を配置するための領域。現在はCSSと星の装飾のみで、キャラクター画像は作成・表示していません。
-- 正式全景2枚、復活マスクの座標・境界ぼかし・全復活処理は維持。JavaScriptの差分はテーマ指定用の属性追加3行のみ。
-- CSSとUI用JavaScriptにバージョン付きURLを使用。次回更新時は `index.html` の `v=ui-retake-1` を更新すると古いキャッシュを避けられます。
+- 施設画面には星うさぎの正式立ち絵と、テーマ色に合わせた吹き出しを配置。
+- 正式全景2枚、復活マスクの座標・境界ぼかし・全復活処理は維持。
+- CSSとJavaScriptにバージョン付きURLを使用。次回更新時は `index.html` の `v=star-bunny-1` を更新すると古いキャッシュを避けられます。
 
 検証内容は `docs/ui-retake-checks.md`、フォントの出典とライセンスは `assets/fonts/README.md` と `assets/fonts/OFL.txt` を参照してください。
 
@@ -39,7 +50,7 @@ node scripts/serve.mjs
 - 「すべて眠らせる」で初期状態に戻す。再読み込みでも初期化。
 - ブラウザの戻る・進む、施設URLの直接読み込みにも対応。
 
-パズル、ヒント、正解判定、正式なセーブ、エンディング、音声、衣装切り替えは未実装です。星うさぎの画像は代用せず、今回はキャラクターを表示していません。
+パズル、ヒント、正解判定、正式なセーブ、エンディング、音声、プレイヤーによる衣装切り替えは未実装です。星うさぎは各画面に対応した静止画と、短い案内セリフのみを表示します。
 
 ### 画像の配置
 
@@ -49,12 +60,12 @@ node scripts/serve.mjs
 | --- | --- |
 | 全景・復活前 | `assets/maps/park-before.png` |
 | 全景・復活後 | `assets/maps/park-after.png` |
-| 星うさぎ・基本衣装 | `assets/characters/star-rabbit-default.png` |
-| メリーゴーランド衣装 | `assets/characters/star-rabbit-carousel.png` |
-| 観覧車衣装 | `assets/characters/star-rabbit-ferris-wheel.png` |
-| ミニトレイン衣装 | `assets/characters/star-rabbit-mini-train.png` |
+| 星うさぎ・基本衣装 | `assets/characters/star-bunny-base.png` |
+| メリーゴーランド衣装 | `assets/characters/star-bunny-carousel.png` |
+| 観覧車衣装 | `assets/characters/star-bunny-ferris-wheel.png` |
+| ミニトレイン衣装 | `assets/characters/star-bunny-train.png` |
 
-全景2枚を置いて再読み込みすると自動採用します。ファイル名の大文字・小文字を含めて合わせてください。衣装画像は次段階用の保存先で、現段階では読み込みません。WebP等を使う場合は `js/config.js` の画像パスを変更できます。
+全景2枚と星うさぎ4枚は配置済みです。ファイル名の大文字・小文字を含めて合わせてください。WebP等を使う場合は `js/config.js` の画像パスを変更できます。
 
 片方がない・読み込めない場合、または縦横比が一致しない場合は、構図の揃った仮画像ペアで表示します。正式画像と仮画像を混ぜません。現在の仮画像は `placeholder-before.svg` と `placeholder-after.svg`（1440×960）。正式画像とは別名なので、削除や置き換えは不要です。
 
@@ -77,8 +88,8 @@ node scripts/serve.mjs
 ```text
 index.html                     マップと施設仮画面
 css/style.css                  PC・スマートフォン共通の見た目
-js/config.js                   画像パス・施設情報・タップ領域・復活範囲
-js/app.js                      施設移動・復活切り替え・画像読み込み
+js/config.js                   画像パス・施設情報・タップ領域・復活範囲・案内セリフ
+js/app.js                      施設移動・復活切り替え・画像読み込み・星うさぎ表示
 assets/maps/                   正式全景画像と仮画像ペア
 assets/characters/             星うさぎ画像の配置先
 assets/favicon.svg             ページアイコン
@@ -86,6 +97,7 @@ scripts/serve.mjs              依存不要のローカル開発サーバー
 scripts/check.mjs              JavaScriptの構文チェック
 scripts/create-placeholders.mjs 仮画像の再生成（通常は実行不要）
 docs/stage-1-checks.md          第1段階の確認記録
+docs/star-bunny-checks.md       星うさぎ初登場の確認記録
 .nojekyll                      GitHub Pages向けの静的配信設定
 ```
 
@@ -93,10 +105,10 @@ docs/stage-1-checks.md          第1段階の確認記録
 
 ### Gitと公開
 
-GitHubの既存 `main` と初期READMEをクローンして作業を開始しました。元のREADME冒頭と初期コミットを残しています。接続先は `https://github.com/miosuhara0806-web/RememberMyPark.git`。正式な全景2枚を含め、通常のコミット・pushでスマートフォン実機確認用の仮公開を行います。
+GitHubの既存 `main` と初期READMEをクローンして作業を開始しました。元のREADME冒頭と初期コミットを残しています。接続先は `https://github.com/miosuhara0806-web/RememberMyPark.git`。既存のGitHub Pagesへ、星うさぎの正式画像4枚を含む変更を通常のコミット・pushで反映します。
 
 GitHub Pagesの公開元は、リポジトリの Settings → Pages で `Deploy from a branch`、`main`、`/(root)` を指定します。既存履歴の削除や強制pushは不要です。プロジェクト配下の相対パスで動作し、特別なビルド設定は必要ありません。
 
-公開先：<https://miosuhara0806-web.github.io/RememberMyPark/>（Pagesの初回デプロイ成功後に利用できます）。以降は `main` への通常pushで更新されます。仮公開にパスワードはなく、URLを知る人はアクセスできます。
+公開先：<https://miosuhara0806-web.github.io/RememberMyPark/>。`main` への通常pushで更新されます。仮公開にパスワードはなく、URLを知る人はアクセスできます。
 
-**PC検収は完了しました。次はスマートフォン実機で確認し、第2段階のパズル本実装は別途依頼を受けてから進めます。**
+**今回は星うさぎの表示と案内セリフの確認までです。ユーザーの表示確認後に作業を終了し、パズル本実装は別途依頼を受けてから進めます。**

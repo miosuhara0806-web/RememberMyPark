@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffdeee">
-  <meta name="description" content="眠っていた遊園地に、もう一度あかりを。Remember My Park 第1段階の試作。">
+  <meta name="description" content="星うさぎと、眠っていた遊園地にもう一度あかりを。Remember My Parkのブラウザゲーム試作。">
   <title>Remember My Park｜眠っていた遊園地</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=ui-retake-1">
-  <script src="js/config.js" defer></script>
-  <script src="js/app.js?v=ui-retake-1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=star-bunny-1">
+  <script src="js/config.js?v=star-bunny-1" defer></script>
+  <script src="js/app.js?v=star-bunny-1" defer></script>
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#map" aria-label="Remember My Park 全景マップ"><span class="brand-star" aria-hidden="true">✦</span><span>Remember My Park<small>リメンバー・マイ・パーク</small></span></a>
-    <span class="stage-tag"><span aria-hidden="true">★</span> 第1段階 <span>·</span> PROTOTYPE</span>
+    <span class="stage-tag"><span aria-hidden="true">★</span> 第2段階 <span>·</span> PROTOTYPE</span>
   </header>
   <main>
     <section id="map-view" aria-labelledby="map-title">
@@ -37,6 +37,10 @@
         </div>
         <div class="map-bottomline"><span class="little-star" aria-hidden="true">✦</span><p>どこからでも、あなたの好きな順番で。</p><span class="map-index">PARK MAP <b>01</b></span></div>
       </div>
+      <aside id="map-guide" class="bunny-guide map-guide" aria-label="星うさぎの案内">
+        <figure class="bunny-portrait"><img class="bunny-image" width="824" height="753" alt="基本衣装の星うさぎ" decoding="async" hidden><p class="bunny-fallback">星うさぎの画像を準備中</p></figure>
+        <div class="bunny-speech"><h2 class="bunny-name"><span aria-hidden="true">✦</span> 星うさぎ</h2><p class="bunny-message"></p></div>
+      </aside>
       <div class="attraction-heading"><span aria-hidden="true">✦</span><h2>どの思い出に、会いにいく？</h2><span aria-hidden="true">✦</span></div>
       <div id="facility-links" class="facility-links" aria-label="アトラクション一覧"></div>
       <details class="dev-panel" open>
@@ -49,10 +53,12 @@
       <div class="facility-card">
         <div class="facility-hero"><span id="facility-number" class="eyebrow"></span><div id="facility-icon" class="facility-illustration" aria-hidden="true"></div><h1 id="facility-title" tabindex="-1"></h1><p id="facility-description"></p></div>
         <div class="facility-body">
-          <div class="coming-soon"><span class="soon-star" aria-hidden="true">✦</span><span class="pill">パズル準備中</span><h2>この思い出は、<br>まだ夢のなか。</h2><p>ここには、2問のパズルを<br>実装予定です。<br>遊園地が目を覚ます日を、<br>もう少し待っていてね。</p></div>
-          <!-- 星うさぎの正式立ち絵を後から置ける領域。今回は星の装飾だけを表示。 -->
-          <div class="character-space" aria-hidden="true"><span>✦</span><span>✧</span><span>☆</span><div class="character-pedestal"></div></div>
+          <aside id="facility-guide" class="bunny-guide facility-guide" aria-label="星うさぎの案内">
+            <figure class="bunny-portrait"><img class="bunny-image" width="824" height="753" alt="" decoding="async" hidden><p class="bunny-fallback">星うさぎの画像を準備中</p></figure>
+            <div class="bunny-speech"><h2 class="bunny-name"><span aria-hidden="true">✦</span> 星うさぎ</h2><p class="bunny-message"></p></div>
+          </aside>
         </div>
+        <div class="puzzle-notice"><span class="pill">パズル準備中</span><p>ここには、2問のパズルを実装予定です。</p></div>
         <a class="primary-button" href="#map"><span aria-hidden="true">★</span> 全景マップへ戻る <span aria-hidden="true">→</span></a>
       </div>
     </section>

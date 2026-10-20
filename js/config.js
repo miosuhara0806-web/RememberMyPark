@@ -6,22 +6,42 @@ window.PARK_CONFIG = {
     fallbackBefore: "assets/maps/placeholder-before.svg",
     fallbackAfter: "assets/maps/placeholder-after.svg"
   },
+  guide: {
+    image: "assets/characters/star-bunny-base.png",
+    alt: "基本衣装の星うさぎ",
+    message: "まだ眠っている乗り物があるよ。どこから直してみようか？"
+  },
   attractions: [
     {
       id: "carousel", name: "メリーゴーランド", english: "MERRY-GO-ROUND", number: "01",
       description: "くるくる巡る、小さな夢の記憶。", icon: "carousel",
+      guide: {
+        image: "assets/characters/star-bunny-carousel.png",
+        alt: "メリーゴーランド衣装の星うさぎ",
+        message: "この木馬たち、みんなお気に入りの飾りがあったんだ。一緒に思い出してくれる？"
+      },
       hotspot: { x: 27, y: 37, width: 31, height: 35 },
       restoration: { x: 26, y: 35, radiusX: 29, radiusY: 37 }
     },
     {
       id: "ferris-wheel", name: "観覧車", english: "FERRIS WHEEL", number: "02",
       description: "空にいちばん近い場所で、また会おう。", icon: "wheel",
+      guide: {
+        image: "assets/characters/star-bunny-ferris-wheel.png",
+        alt: "観覧車衣装の星うさぎ",
+        message: "ゴンドラの並び方が分からなくなっちゃったの。もとの場所に戻してあげよう？"
+      },
       hotspot: { x: 74, y: 31, width: 29, height: 46 },
       restoration: { x: 75, y: 31, radiusX: 28, radiusY: 42 }
     },
     {
       id: "mini-train", name: "ミニトレイン", english: "MINI TRAIN", number: "03",
       description: "思い出を乗せて、ゆっくり走り出す。", icon: "train",
+      guide: {
+        image: "assets/characters/star-bunny-train.png",
+        alt: "ミニトレイン衣装の星うさぎ",
+        message: "しゅっぱーつ！ ……って言いたいんだけどね。線路がバラバラになっちゃったの！"
+      },
       hotspot: { x: 76, y: 76, width: 35, height: 28 },
       restoration: { x: 76, y: 77, radiusX: 34, radiusY: 30 }
     }
