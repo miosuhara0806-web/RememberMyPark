@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#eee8f3">
+  <meta name="description" content="眠っていた遊園地に、もう一度あかりを。Remember My Park 第1段階の試作。">
+  <title>Remember My Park｜眠っていた遊園地</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#map" aria-label="Remember My Park 全景マップ"><span class="brand-star" aria-hidden="true">✧</span><span>Remember My Park<small>リメンバー・マイ・パーク</small></span></a>
+    <span class="stage-tag">第1段階 <span>·</span> PROTOTYPE</span>
+  </header>
+  <main>
+    <section id="map-view" aria-labelledby="map-title">
+      <div class="intro"><p class="eyebrow">A LITTLE LIGHT, A LITTLE MEMORY</p><h1 id="map-title" tabindex="-1">もう一度、ここにあかりを。</h1><p>眠っていた遊園地で、思い出の続きを。<br class="mobile-break">気になるアトラクションを選んでね。</p></div>
+      <div class="park-frame">
+        <div class="map-topline"><span><i aria-hidden="true"></i> 思い出の遊園地</span><span id="progress">あかり 0 / 3</span></div>
+        <div id="park-map" class="park-map" aria-label="遊園地の全景マップ">
+          <img id="map-before" class="map-image" src="assets/maps/placeholder-before.svg" width="1440" height="960" alt="遊園地の全景。左上にメリーゴーランド、右上に観覧車、右下にミニトレイン。">
+          <div id="restoration-layers" aria-hidden="true"></div>
+          <div id="hotspots"></div>
+          <span class="map-caption" id="map-caption">配置確認用の仮マップ</span>
+        </div>
+        <div class="map-bottomline"><span class="little-star" aria-hidden="true">✦</span><p>どこからでも、あなたの好きな順番で。</p><span class="map-index">PARK MAP <b>01</b></span></div>
+      </div>
+      <div id="facility-links" class="facility-links" aria-label="アトラクション一覧"></div>
+      <details class="dev-panel" open>
+        <summary><span><span class="dev-badge">DEV</span> あかりの切り替え</span><span class="summary-hint">開発用プレビュー <span aria-hidden="true">⌄</span></span></summary>
+        <div class="dev-content"><p>施設ごとの復活を試せます。再読み込みすると元に戻ります。</p><div class="dev-controls"><div id="restoration-controls" class="restoration-controls"></div><button id="reset" class="text-button" type="button">すべて眠らせる <span aria-hidden="true">↺</span></button></div><p id="asset-status" class="asset-status" role="status">画像素材を確認しています。</p></div>
+      </details>
+    </section>
+    <section id="facility-view" class="facility-view" aria-labelledby="facility-title" hidden>
+      <a href="#map" class="back-link">← 全景マップへ戻る</a>
+      <div class="facility-card"><span id="facility-number" class="eyebrow"></span><div id="facility-icon" class="facility-illustration" aria-hidden="true"></div><p class="eyebrow">A MEMORY WAITING TO WAKE</p><h1 id="facility-title" tabindex="-1"></h1><p id="facility-description"></p><div class="coming-soon"><span aria-hidden="true">✧</span><h2>この思い出は、まだ夢のなか。</h2><p>ここには、2問のパズルを実装予定です。<br>遊園地が目を覚ます日を、もう少し待っていてね。</p><span class="pill">パズル準備中</span></div><a class="primary-button" href="#map">全景マップへ戻る <span aria-hidden="true">→</span></a></div>
+    </section>
+    <noscript><p class="noscript">施設の選択と復活切り替えには、JavaScriptを有効にしてください。</p></noscript>
+  </main>
+  <footer><span>Remember My Park</span><span>小さなあかりが、思い出をつなぐ。</span></footer>
+  <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
+</body>
+</html>
