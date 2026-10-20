@@ -24,11 +24,13 @@
     const link = document.createElement("a");
     link.href = `#${item.id}`;
     link.className = "facility-link";
+    link.dataset.id = item.id;
     link.innerHTML = `${icon(item.icon)}<span><small>${item.number} / ${item.english}</small><b>${item.name}</b></span><span class="link-arrow" aria-hidden="true">↗</span>`;
     $("facility-links").append(link);
 
     const label = document.createElement("label");
     label.className = "toggle-label";
+    label.dataset.id = item.id;
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.value = item.id;
@@ -81,6 +83,7 @@
     $("map-view").hidden = Boolean(item);
     $("facility-view").hidden = !item;
     if (item) {
+      $("facility-view").dataset.theme = item.id;
       $("facility-title").textContent = item.name;
       $("facility-description").textContent = item.description;
       $("facility-number").textContent = `ATTRACTION ${item.number} / ${item.english}`;
