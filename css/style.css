@@ -305,3 +305,182 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+/* 第3段階：思い出のチケットと6問のパズル */
+select { font: inherit; color: var(--ink); }
+select:focus-visible { outline: 3px solid #7040a3; outline-offset: 3px; }
+button:disabled { cursor: default; opacity: .58; transform: none; }
+#puzzle-root { margin-bottom: 28px; text-align: left; }
+.puzzle-intro { text-align: center; }
+.puzzle-intro h2 { font-size: 20px; }
+.play-note, .ready-note { color: var(--muted); font-size: 12px; }
+.is-playing .facility-illustration { display: none; }
+.is-playing .facility-hero > .eyebrow { display: table; margin: 0 auto 8px; }
+.is-playing .facility-hero > p { display: none; }
+.is-playing .facility-hero h1 { margin-bottom: 18px; font-size: 23px; }
+.is-playing .facility-body { padding: 10px 13px; }
+.is-playing .facility-guide { grid-template-columns: 85px minmax(0, 1fr); gap: 12px; }
+.is-playing .facility-guide .bunny-portrait { grid-column: 1; grid-row: 1; max-width: 85px; }
+.is-playing .facility-guide .bunny-fallback { min-height: 60px; font-size: 10px; padding: 4px; }
+.is-playing .facility-guide .bunny-fallback::before { display: none; }
+.is-playing .facility-guide .bunny-speech { grid-column: 2; grid-row: 1; padding: 10px 13px; }
+.is-playing .facility-guide .bunny-speech::before { left: -8px; right: auto; top: calc(50% - 7px); width: 12px; height: 12px; border: 0; border-left: 2px solid var(--theme-border); border-bottom: 2px solid var(--theme-border); }
+.is-playing .bunny-name { font-size: 12px; margin-bottom: 3px; }
+.is-playing .bunny-message { font-size: 13px; line-height: 1.65; }
+.round-nav { display: flex; gap: 8px; margin: 12px 0 20px; }
+.round-nav button { flex: 1; min-height: 44px; padding: 7px; color: var(--theme); background: white; border: 1px dashed var(--theme-border); border-radius: 12px; }
+.round-nav [aria-current] { background: var(--theme-soft); border: 2px solid var(--theme); font-weight: bold; }
+.puzzle-heading { text-align: center; }
+.puzzle-heading h2 { margin: 10px 0; color: var(--theme); font-size: clamp(18px, 4.5vw, 23px); }
+.puzzle-heading h2:focus { outline: none; }
+.puzzle-instruction { text-align: center; font-size: 13px; }
+.puzzle-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.board-area { min-width: 0; }
+.clue-card { padding: 16px; border: 2px dashed var(--theme-border); border-radius: 17px; background: #fffdf4; }
+.clue-card h3, .hint-card h3 { margin: 0 0 10px; color: var(--theme); font-size: 15px; }
+.clue-card ol, .clue-card ul { padding-left: 23px; margin: 0; }
+.clue-card li { padding: 0 0 12px 3px; font-size: 13px; line-height: 1.8; }
+.clue-card li:last-child { padding-bottom: 0; }
+.assignment-list { display: grid; gap: 9px; }
+.assignment { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: white; border: 1px solid var(--theme-border); border-radius: 15px; }
+.horse-portrait { display: flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; }
+.horse-portrait svg { display: block; width: 58px; height: 48px; }
+.assignment select { display: block; min-width: 0; max-width: 170px; width: 53%; min-height: 44px; padding: 8px 4px; background: #fff9fd; border: 1px solid #a58baa; border-radius: 10px; font-size: 13px; }
+.decoration-select { position: relative; width: 53%; max-width: 170px; min-width: 0; }
+.decoration-select select { width: 100%; }
+/* 標準selectを維持し、閉じた鈴の表示だけをSVGに置き換える。 */
+.has-bell select { -webkit-text-fill-color: transparent; }
+.has-bell option { color: var(--ink); -webkit-text-fill-color: var(--ink); }
+.selected-bell { position: absolute; inset: 1px 24px 1px 5px; display: flex; align-items: center; gap: 4px; color: var(--ink); pointer-events: none; font-size: 13px; }
+.selected-bell img { flex: none; width: 20px; height: 20px; }
+.has-bell select:disabled + .selected-bell { opacity: .58; }
+.wheel-wrap { width: 100%; max-width: 340px; margin: 0 auto; }
+.wheel-direction { margin: 0; text-align: center; font-size: 12px; color: var(--theme); }
+.wheel-board { width: 100%; aspect-ratio: 1; position: relative; }
+.wheel-board > svg { display: block; width: 100%; height: 100%; }
+.gondola { display: flex; align-items: center; justify-content: center; gap: 4px; position: absolute; transform: translate(-50%, -50%); width: 49px; min-height: 46px; padding: 4px; background: var(--gondola); border: 2px solid #80649a; border-radius: 12px 12px 16px 16px; color: #493456; box-shadow: 0 3px 0 #dbcae9; }
+.gondola:disabled { opacity: 1; transform: translate(-50%, -50%); }
+.gondola b { padding: 0 3px; background: #ffffffc9; border-radius: 4px; font-size: 13px; }
+.gondola span { font-size: 13px; }
+.assignment-list.wheel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.wheel .assignment { display: block; padding: 7px; }
+.slot-label { display: block; font-size: 11px; margin-bottom: 4px; }
+.wheel .assignment select { width: 100%; max-width: none; }
+.train-wrap { width: 100%; max-width: 400px; margin: auto; }
+.track-frame { position: relative; padding-inline: 21px; }
+.entrance-arrow, .exit-arrow { position: absolute; display: grid; place-items: center; width: 21px; height: 26px; color: #285f49; font-size: 24px; line-height: 1; transform: translateY(-50%); }
+.entrance-arrow { left: 0; top: calc(50% / var(--size)); }
+.exit-arrow { right: 0; top: calc(100% - 50% / var(--size)); }
+.train-board { display: grid; grid-template-columns: repeat(var(--size), minmax(0, 1fr)); gap: 4px; padding: 5px; background: #bedfcf; border: 2px solid #82b39d; border-radius: 12px; }
+.track-tile { position: relative; display: block; width: 100%; aspect-ratio: 1; padding: 0; background: #fffbed; border: 1px solid #a4be9f; border-radius: 7px; color: #513c66; overflow: hidden; touch-action: manipulation; }
+.track-tile:disabled { opacity: 1; }
+.track-tile > svg { display: block; width: 100%; height: 100%; }
+.track-bed { fill: none; stroke: #8c6d50; stroke-width: 18px; }
+.track-ties { fill: none; stroke: #f4dab2; stroke-width: 24px; stroke-dasharray: 3 7; }
+.track-line { fill: none; stroke: #fff5d8; stroke-width: 7px; }
+.cell-coordinate { position: absolute; top: 2px; left: 4px; font-size: 9px; color: #596554; background: #fffbeddd; border-radius: 3px; padding: 0 2px; line-height: 1.4; }
+.station-mark { position: absolute; right: 3px; bottom: 3px; display: grid; place-items: center; width: 23px; height: 23px; color: #785018; background: #ffdf84; border: 1px solid #ae8234; border-radius: 50%; font-size: 17px; line-height: 1; }
+.track-entrance, .track-exit { display: flex; align-items: center; gap: 7px; min-height: 34px; color: #306752; font-weight: bold; font-size: 13px; }
+.track-exit { justify-content: flex-end; }
+.track-entrance span, .track-exit span { font-size: 10px; font-weight: normal; }
+.station-legend { font-size: 11px; text-align: center; margin: 5px 0 0; }
+.track-tile.is-traced { animation: train-visit .4s var(--visit-delay) both; }
+.trace-step { position: absolute; left: 3px; bottom: 3px; display: grid; place-items: center; width: 20px; height: 20px; background: #306752; color: white; border-radius: 50%; font-size: 10px; }
+.ready-note { margin: 15px 0 10px; text-align: center; }
+.puzzle-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 18px 0; }
+.puzzle-actions .primary-button { gap: 0; padding: 10px 22px; }
+.secondary-button { min-height: 48px; padding: 10px 16px; background: white; border: 2px solid var(--theme-border); border-radius: 25px; color: var(--theme); font-size: 13px; }
+.answer-feedback { margin: 15px 0; padding: 14px; border: 2px solid #b39ec9; border-radius: 15px; background: #fff; font-size: 14px; }
+.answer-feedback.correct { border-color: #589679; color: #245640; background: #effcf4; }
+.hint-card { margin-top: 15px; padding: 16px; border: 2px dashed var(--theme-border); border-radius: 17px; background: #fff6d9; }
+.hint-card ol { margin: 0; padding-left: 20px; }
+.hint-card li { padding: 4px 0; font-size: 13px; }
+.hint-card b { display: block; color: var(--theme); }
+.success-card { text-align: center; padding: 18px; margin-top: 20px; background: #fff4cf; border: 2px solid #d9b359; border-radius: 22px; }
+.success-card h3 { margin: 0; color: var(--theme); font-size: 21px; }
+.celebration-guide { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; margin: 16px 0; }
+.celebration-guide .bunny-speech { padding: 10px 12px; }
+.celebration-guide .bunny-speech::before { width: 12px; height: 12px; left: -8px; }
+.celebration-guide .bunny-fallback { min-height: 60px; font-size: 10px; padding: 4px; }
+.celebration-guide .bunny-fallback::before { display: none; }
+.celebration-stars { color: #ac7420; font-size: 28px; letter-spacing: 10px; }
+.facility-restored .celebration-stars { animation: park-cheer 1.2s ease-in-out 2; }
+.facility-restored { animation: light-appear .7s; }
+@keyframes train-visit { from { background: #fffbed; } to { background: #d3f5dc; box-shadow: inset 0 0 0 2px #438562; } }
+@keyframes park-cheer { 50% { transform: scale(1.15); } }
+@media (max-width: 760px) {
+  .puzzle-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .assignment-list.horses { max-width: 430px; width: 100%; margin: auto; }
+  .clue-card { padding: 13px; }
+  .clue-card li { padding-bottom: 9px; }
+}
+@media (max-width: 600px) {
+  .is-playing .facility-card { padding: 16px 10px 22px; }
+  .is-playing .facility-hero h1 { font-size: 20px; padding: 3px 15px; }
+  .is-playing .facility-body { padding: 8px; }
+  .is-playing .facility-guide { grid-template-columns: 64px minmax(0, 1fr); gap: 9px; }
+  .is-playing .facility-guide .bunny-portrait { max-width: 64px; }
+  .is-playing .facility-guide .bunny-speech { padding: 8px 10px; }
+  .is-playing .bunny-message { font-size: 12px; }
+  .is-playing .bunny-name { font-size: 11px; }
+  .puzzle-actions { gap: 8px; }
+  .puzzle-actions .primary-button { flex-basis: 100%; }
+  .puzzle-actions .secondary-button { flex: 1; padding: 9px; }
+  .puzzle-instruction { font-size: 12px; }
+  .clue-card li { font-size: 12px; }
+  .horse-portrait svg { width: 51px; }
+  .round-nav button { font-size: 12px; }
+  .assignment select { font-size: 16px; }
+  .selected-bell { font-size: 16px; }
+  .track-entrance span, .track-exit span { font-size: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .facility-restored, .facility-restored .celebration-stars, .track-tile.is-traced { animation: none; }
+  .track-tile.is-traced { background: #d3f5dc; box-shadow: inset 0 0 0 2px #438562; }
+}
+
+/* 第4段階：自動保存・エンディング・誤操作を防ぐ初期化 */
+.save-status { margin: 8px 0 14px; padding: 7px 12px; text-align: center; color: #416854; background: #f0fff4; border: 1px solid #add3bd; border-radius: 13px; font-size: 12px; }
+.save-status.save-warning { background: #fff5db; color: #76521c; border-color: #d7b665; }
+.dev-preview-status { margin: 0 6px 10px; padding: 8px 12px; border: 2px dashed #8f73b4; border-radius: 12px; background: #fff3c9; color: #63447a; font-size: 12px; }
+.ending-invitation { text-align: center; margin: 27px 0; padding: 19px; background: #fff2cc; border: 2px dashed #d4ad56; border-radius: 23px; }
+.ending-invitation p { color: #925122; font-size: 14px; margin: 0 0 13px; }
+.restart-area { margin: 27px 0; text-align: center; }
+.restart-area p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+.ending-view { padding: 12px 0 35px; }
+.ending-card { position: relative; margin-top: 22px; padding: 28px; border: 3px solid #eaa5cb; border-radius: 28px; background: linear-gradient(160deg, #fff4fc, #f0f5ff 60%, #edfff4); box-shadow: 0 6px 0 #f4cce3; text-align: center; }
+.ending-ribbon { display: inline-block; margin: 0; padding: 7px 22px; color: #905324; background: #ffe3a1; border-radius: 8px 8px 18px 18px; }
+.ending-card h1 { color: var(--pink); margin: 18px 0 25px; font-size: clamp(23px, 4.5vw, 34px); }
+.ending-landscape { margin: 0; padding: 8px; border: 2px solid #e7bcda; border-radius: 22px; background: white; box-shadow: 0 5px 0 #e8ddf1; }
+.ending-landscape img { display: block; width: 100%; height: auto; border-radius: 14px; }
+.ending-landscape figcaption:empty { display: none; }
+.ending-story { max-width: 600px; margin: 28px auto; padding: 6px 0; }
+.ending-story p { margin: 16px 0; font-size: 16px; line-height: 2; overflow-wrap: anywhere; }
+.ending-guide { grid-template-columns: 180px minmax(0, 1fr); max-width: 650px; margin: 0 auto; padding: 14px; border: 2px dashed var(--theme-border); border-radius: 22px; background: #fff9f1; }
+.ending-guide .bunny-portrait { max-width: 180px; }
+.ending-signoff { margin: 30px 0 23px; }
+.ending-signoff .park-title { margin: 0; font-size: clamp(28px, 5vw, 44px); }
+.ending-signoff > p:last-child { margin: 14px 0 0; color: #98702b; letter-spacing: .15em; }
+.restart-dialog { max-width: 460px; width: calc(100% - 30px); padding: 24px; border: 3px solid #eaa5cb; border-radius: 24px; background: #fff7fb; color: var(--ink); box-shadow: 0 7px 0 #e9c3db; }
+.restart-dialog::backdrop { background: #4c355b85; backdrop-filter: blur(2px); }
+.restart-dialog h2 { color: var(--pink); margin-top: 0; font-size: 22px; }
+.restart-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+.restart-actions button { flex: 1; }
+.restart-actions .primary-button { padding: 10px 14px; font-size: 13px; }
+#restart-error { color: #8d4520; background: #fff0c2; padding: 10px; border-radius: 10px; }
+@media (max-width: 600px) {
+  .save-status { font-size: 11px; }
+  .ending-card { padding: 20px 11px; border-width: 2px; }
+  .ending-ribbon { padding: 6px 12px; font-size: 12px; }
+  .ending-landscape { padding: 5px; border-radius: 16px; }
+  .ending-story p { font-size: 14px; text-align: left; }
+  .ending-story { padding: 0 7px; }
+  .ending-guide { grid-template-columns: 78px minmax(0, 1fr); gap: 10px; padding: 9px; }
+  .ending-guide .bunny-speech { padding: 11px; }
+  .ending-guide .bunny-message { font-size: 13px; }
+  .ending-guide .bunny-name { font-size: 12px; }
+  .ending-invitation { padding: 15px 10px; }
+  .ending-invitation p { font-size: 12px; }
+  .restart-dialog { padding: 20px 15px; }
+  .restart-actions { flex-direction: column; }
+}

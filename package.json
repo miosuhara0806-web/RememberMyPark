@@ -1,11 +1,13 @@
 {
   "name": "remember-my-park",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
-  "description": "Remember My Park — stage one browser prototype",
+  "description": "Remember My Park — autosave and ending final playtest",
   "scripts": {
     "start": "node scripts/serve.mjs",
     "check": "node scripts/check.mjs"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

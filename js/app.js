@@ -1,7 +1,10 @@
 (() => {
   "use strict";
   const config = window.PARK_CONFIG;
-  const restored = new Set();
+  const saved = window.ParkSave.load();
+  let progress = saved.state;
+  const restored = new Set(progress.restored);
+  let devRestored = null;
   let afterSource = config.images.fallbackAfter;
   const $ = (id) => document.getElementById(id);
   const icons = {
@@ -63,9 +66,10 @@
     checkbox.type = "checkbox";
     checkbox.value = item.id;
     checkbox.addEventListener("change", () => {
-      checkbox.checked ? restored.add(item.id) : restored.delete(item.id);
+      if (!devRestored) devRestored = new Set(restored);
+      checkbox.checked ? devRestored.add(item.id) : devRestored.delete(item.id);
       renderRestoration();
-      $("live-status").textContent = `${item.name}を${checkbox.checked ? "復活させました" : "眠らせました"}。`;
+      $("live-status").textContent = `DEVプレビュー：${item.name}を${checkbox.checked ? "復活させました" : "眠らせました"}。記録は変更していません。`;
     });
     label.append(checkbox, document.createTextNode(item.name));
     $("restoration-controls").append(label);
@@ -74,8 +78,9 @@
   function renderRestoration() {
     const container = $("restoration-layers");
     container.replaceChildren();
-    const all = restored.size === config.attractions.length;
-    const regions = all ? [null] : config.attractions.filter((item) => restored.has(item.id));
+    const visible = devRestored || restored;
+    const all = visible.size === config.attractions.length;
+    const regions = all ? [null] : config.attractions.filter((item) => visible.has(item.id));
     regions.forEach((item) => {
       const image = document.createElement("img");
       image.src = afterSource;
@@ -91,38 +96,127 @@
       container.append(image);
     });
     $("progress").textContent = `あかり ${restored.size} / ${config.attractions.length}`;
+    const normalComplete = restored.size === config.attractions.length;
+    renderGuide("map-guide", { ...config.guide, message: normalComplete ? config.guide.restoredMessage : config.guide.message });
+    $("ending-invitation").hidden = !normalComplete || Boolean(devRestored);
+    $("dev-preview-status").hidden = !devRestored;
+    $("dev-preview-status").textContent = devRestored ? `DEVプレビュー ${visible.size}/3・保存されません。あかりの記録は ${restored.size}/3 のままです。` : "";
+    $("exit-preview").hidden = !devRestored;
+    document.querySelectorAll("#restoration-controls input").forEach(input => input.checked = visible.has(input.value));
     document.querySelectorAll(".hotspot").forEach((element) => {
-      const isRestored = restored.has(element.dataset.id);
+      const isRestored = visible.has(element.dataset.id);
       element.classList.toggle("is-restored", isRestored);
       element.querySelector(".hotspot-spark").textContent = isRestored ? "✦" : "✧";
     });
   }
 
   $("reset").addEventListener("click", () => {
-    restored.clear();
-    document.querySelectorAll("#restoration-controls input").forEach((input) => input.checked = false);
+    devRestored = new Set();
     renderRestoration();
-    $("live-status").textContent = "すべてのあかりを眠らせました。";
+    $("live-status").textContent = "DEVプレビューのあかりだけを眠らせました。記録は変更していません。";
+  });
+  $("exit-preview").addEventListener("click", () => { devRestored = null; renderRestoration(); });
+
+  function writeProgress() {
+    const ok = window.ParkSave.write(progress);
+    $("save-status").classList.toggle("save-warning", !ok);
+    $("save-status").textContent = ok ? "✓ 進み具合を自動保存しました。このブラウザーで続きから遊べます。" : "保存できませんでした。このまま遊べますが、画面を閉じると今回の進み具合が失われることがあります。";
+    return ok;
+  }
+  function updateProgress() {
+    progress.facilities = game.snapshot();
+    progress.restored = window.ParkSave.restoredFrom(progress.facilities);
+    progress.lightCount = progress.restored.length;
+    restored.clear();
+    progress.restored.forEach(id => restored.add(id));
+    devRestored = null;
+    writeProgress();
+    renderRestoration();
+  }
+
+  const game = window.createPuzzleGame({
+    renderGuide,
+    initialState: progress.facilities,
+    onChange: updateProgress,
+    onRestore(id) {
+      $("live-status").textContent = `${config.attractions.find(item => item.id === id).name}が復活しました。`;
+    }
+  });
+
+  if (saved.status === "corrupt") {
+    const repaired = writeProgress();
+    if (repaired) $("save-status").textContent = "保存データを読み込めなかったため、最初から始めます。新しい進み具合は自動保存されます。";
+  } else if (saved.status === "unavailable") {
+    $("save-status").textContent = "このブラウザーでは保存データを読み書きできません。画面を閉じると進み具合が失われます。";
+    $("save-status").classList.add("save-warning");
+  } else if (saved.status === "loaded") {
+    $("save-status").textContent = "✓ 保存した進み具合から再開しました。";
+  }
+
+  $("restart-game").addEventListener("click", () => {
+    $("restart-error").hidden = true;
+    $("restart-dialog").showModal();
+  });
+  $("cancel-restart").addEventListener("click", () => $("restart-dialog").close());
+  $("confirm-restart").addEventListener("click", () => {
+    const empty = window.ParkSave.fresh();
+    // 保存の初期化に失敗したときは、画面内の記録も消さずに戻せる。
+    if (!window.ParkSave.write(empty)) { $("restart-error").hidden = false; return; }
+    progress = empty;
+    game.reset(progress.facilities);
+    restored.clear();
+    devRestored = null;
+    $("restart-dialog").close();
+    $("save-status").classList.remove("save-warning");
+    $("save-status").textContent = "記録を初期化しました。あかり0/3から、もう一度遊べます。";
+    history.replaceState(null, "", "#map");
+    renderRestoration();
+    route();
+  });
+
+  // 専用画像 → 正式な復活後マップ → 仮マップの順にフォールバックする。
+  const endingSources = [...new Set([config.ending.image, config.images.after, config.images.fallbackAfter].filter(Boolean))];
+  let endingImageIndex = 0;
+  $("ending-image").onerror = () => {
+    if (++endingImageIndex < endingSources.length) $("ending-image").src = endingSources[endingImageIndex];
+    else { $("ending-image").hidden = true; $("ending-image-status").textContent = "画像を読み込めませんでした。星うさぎと、お話の続きを楽しんでね。"; }
+  };
+  $("ending-image").src = endingSources[0];
+  config.ending.paragraphs.forEach(text => {
+    const p = document.createElement("p");
+    p.textContent = text;
+    $("ending-story").append(p);
   });
 
   function route(focus = true) {
-    const id = window.location.hash.slice(1);
+    let id = window.location.hash.slice(1);
+    if (id === "ending" && restored.size !== config.attractions.length) {
+      history.replaceState(null, "", "#map");
+      id = "map";
+    }
+    const isEnding = id === "ending";
     const item = config.attractions.find((entry) => entry.id === id);
-    $("map-view").hidden = Boolean(item);
+    $("map-view").hidden = Boolean(item) || isEnding;
     $("facility-view").hidden = !item;
+    $("ending-view").hidden = !isEnding;
+    if (item || isEnding) { devRestored = null; renderRestoration(); }
     if (item) {
       $("facility-view").dataset.theme = item.id;
       $("facility-title").textContent = item.name;
       $("facility-description").textContent = item.description;
       $("facility-number").textContent = `ATTRACTION ${item.number} / ${item.english}`;
       $("facility-icon").innerHTML = icon(item.icon);
-      renderGuide("facility-guide", item.guide);
+      game.open(item);
       document.title = `${item.name}｜Remember My Park`;
+    } else if (isEnding) {
+      renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
+      document.title = "おしまい｜Remember My Park";
+      if (!progress.endingReached) { progress.endingReached = true; writeProgress(); }
     } else {
       document.title = "Remember My Park｜眠っていた遊園地";
     }
     if (focus) {
-      (item ? $("facility-title") : $("map-title")).focus({ preventScroll: true });
+      (item ? $("facility-title") : isEnding ? $("ending-title") : $("map-title")).focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: "instant" });
     }
   }

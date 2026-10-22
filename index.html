@@ -7,16 +7,20 @@
   <meta name="description" content="星うさぎと、眠っていた遊園地にもう一度あかりを。Remember My Parkのブラウザゲーム試作。">
   <title>Remember My Park｜眠っていた遊園地</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=star-bunny-1">
-  <script src="js/config.js?v=star-bunny-1" defer></script>
-  <script src="js/app.js?v=star-bunny-1" defer></script>
+  <link rel="stylesheet" href="css/style.css?v=stage-4-1">
+  <script src="js/config.js?v=stage-4-1" defer></script>
+  <script src="js/puzzles.js?v=stage-4-1" defer></script>
+  <script src="js/save.js?v=stage-4-1" defer></script>
+  <script src="js/puzzle-ui.js?v=stage-4-1" defer></script>
+  <script src="js/app.js?v=stage-4-1" defer></script>
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="#map" aria-label="Remember My Park 全景マップ"><span class="brand-star" aria-hidden="true">✦</span><span>Remember My Park<small>リメンバー・マイ・パーク</small></span></a>
-    <span class="stage-tag"><span aria-hidden="true">★</span> 第2段階 <span>·</span> PROTOTYPE</span>
+    <span class="stage-tag"><span aria-hidden="true">★</span> 第4段階 <span>·</span> 最終検収版</span>
   </header>
   <main>
+    <p id="save-status" class="save-status" role="status">進み具合は、このブラウザーに自動保存されます。</p>
     <section id="map-view" aria-labelledby="map-title">
       <div class="intro">
         <div class="bunting" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -29,6 +33,7 @@
       <div class="park-frame">
         <div class="frame-stars" aria-hidden="true"><span>✦</span><span>✦</span></div>
         <div class="map-topline"><span><i aria-hidden="true">★</i> 思い出の遊園地</span><span id="progress">あかり 0 / 3</span></div>
+        <p id="dev-preview-status" class="dev-preview-status" role="status" hidden></p>
         <div id="park-map" class="park-map" aria-label="遊園地の全景マップ">
           <img id="map-before" class="map-image" src="assets/maps/placeholder-before.svg" width="1440" height="960" alt="遊園地の全景。左上にメリーゴーランド、右上に観覧車、右下にミニトレイン。">
           <div id="restoration-layers" aria-hidden="true"></div>
@@ -41,12 +46,32 @@
         <figure class="bunny-portrait"><img class="bunny-image" width="824" height="753" alt="基本衣装の星うさぎ" decoding="async" hidden><p class="bunny-fallback">星うさぎの画像を準備中</p></figure>
         <div class="bunny-speech"><h2 class="bunny-name"><span aria-hidden="true">✦</span> 星うさぎ</h2><p class="bunny-message"></p></div>
       </aside>
+      <div id="ending-invitation" class="ending-invitation" hidden>
+        <p>✦ すべての思い出に、あかりが戻ったよ ✦</p>
+        <a href="#ending" class="primary-button">エンディングを見る <span aria-hidden="true">→</span></a>
+      </div>
       <div class="attraction-heading"><span aria-hidden="true">✦</span><h2>どの思い出に、会いにいく？</h2><span aria-hidden="true">✦</span></div>
       <div id="facility-links" class="facility-links" aria-label="アトラクション一覧"></div>
-      <details class="dev-panel" open>
+      <div class="restart-area"><button id="restart-game" class="secondary-button" type="button">最初からやり直す</button><p>進行を初期化する前に、確認画面が出ます。</p></div>
+      <details class="dev-panel">
         <summary><span><span class="dev-badge">DEV</span> あかりの切り替え</span><span class="summary-hint">開発用プレビュー <span aria-hidden="true">⌄</span></span></summary>
-        <div class="dev-content"><p>施設ごとの復活を試せます。再読み込みすると元に戻ります。</p><div class="dev-controls"><div id="restoration-controls" class="restoration-controls"></div><button id="reset" class="text-button" type="button">すべて眠らせる <span aria-hidden="true">↺</span></button></div><p id="asset-status" class="asset-status" role="status">画像素材を確認しています。</p></div>
+        <div class="dev-content"><p>DEVは復活表示だけのプレビューです。クリア記録・セーブ・エンディング解放には影響しません。再読み込みや施設への移動で通常表示に戻ります。</p><div class="dev-controls"><div id="restoration-controls" class="restoration-controls"></div><button id="reset" class="text-button" type="button">DEV：すべて眠らせる <span aria-hidden="true">↺</span></button><button id="exit-preview" class="text-button" type="button" hidden>通常の進行表示に戻す</button></div><p id="asset-status" class="asset-status" role="status">画像素材を確認しています。</p></div>
       </details>
+    </section>
+    <section id="ending-view" class="ending-view" aria-labelledby="ending-title" hidden>
+      <a href="#map" class="back-link">← 全景マップへ戻る</a>
+      <div class="ending-card">
+        <p class="ending-ribbon">✦ あかりが戻った遊園地 ✦</p>
+        <h1 id="ending-title" tabindex="-1">思い出は、これからも。</h1>
+        <figure class="ending-landscape"><img id="ending-image" alt="あかりを取り戻した遊園地の全景"><figcaption id="ending-image-status" role="status"></figcaption></figure>
+        <div id="ending-story" class="ending-story"></div>
+        <aside id="ending-guide" class="bunny-guide ending-guide" aria-label="星うさぎからのお礼">
+          <figure class="bunny-portrait"><img class="bunny-image" width="824" height="753" alt="基本衣装の星うさぎ" hidden><p class="bunny-fallback">星うさぎ</p></figure>
+          <div class="bunny-speech"><h2 class="bunny-name">✦ 星うさぎ</h2><p class="bunny-message"></p></div>
+        </aside>
+        <div class="ending-signoff"><p class="park-title">Remember <span>My Park</span></p><p>✦ おしまい ✦</p></div>
+        <a href="#map" class="primary-button">全景マップへ戻る <span aria-hidden="true">→</span></a>
+      </div>
     </section>
     <section id="facility-view" class="facility-view" aria-labelledby="facility-title" hidden>
       <a href="#map" class="back-link">← 全景マップへ戻る</a>
@@ -58,12 +83,18 @@
             <div class="bunny-speech"><h2 class="bunny-name"><span aria-hidden="true">✦</span> 星うさぎ</h2><p class="bunny-message"></p></div>
           </aside>
         </div>
-        <div class="puzzle-notice"><span class="pill">パズル準備中</span><p>ここには、2問のパズルを実装予定です。</p></div>
+        <div id="puzzle-root"></div>
         <a class="primary-button" href="#map"><span aria-hidden="true">★</span> 全景マップへ戻る <span aria-hidden="true">→</span></a>
       </div>
     </section>
     <noscript><p class="noscript">施設の選択と復活切り替えには、JavaScriptを有効にしてください。</p></noscript>
   </main>
+  <dialog id="restart-dialog" class="restart-dialog" aria-labelledby="restart-title" aria-describedby="restart-description">
+    <h2 id="restart-title">最初からやり直す？</h2>
+    <p id="restart-description">クリア記録・パズルの配置・ヒント・エンディングの記録を消して、あかり0/3から始めます。この操作は元に戻せません。</p>
+    <p id="restart-error" role="alert" hidden>保存データを初期化できませんでした。記録は消していません。いったん戻ってから、もう一度試してください。</p>
+    <div class="restart-actions"><button id="cancel-restart" class="secondary-button" type="button" autofocus>やめる</button><button id="confirm-restart" class="primary-button" type="button">記録を消して最初から</button></div>
+  </dialog>
   <footer><span>Remember My Park</span><span>小さなあかりが、思い出をつなぐ。</span></footer>
   <p id="live-status" class="sr-only" role="status" aria-live="polite"></p>
 </body>
