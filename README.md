@@ -76,6 +76,8 @@ node scripts/check.mjs
 
 ### 素材とマップの調整
 
+ホーム画面用の正式アイコンは `assets/icons/park-icon.png`。元画像の内容を保持し、Lanczosで縮小した192・512pxのPNGを `manifest.webmanifest`、180pxをApple touch icon、32pxをfaviconに指定しています。起動先・スコープ・画像参照は相対パスで、GitHub Pagesの `/RememberMyPark/` 配下に収まります。ローカルの確認結果と実機確認手順は `docs/icon-checks.md` を参照してください。
+
 | 素材 | パス |
 | --- | --- |
 | 全景・復活前 | `assets/maps/park-before.png` |
