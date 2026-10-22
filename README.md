@@ -38,7 +38,7 @@ node scripts/serve.mjs
 
 保存先はブラウザー・プロフィール・配信元（ホスト／ポート）ごとです。localhostとGitHub Pages、4173と4174の記録は別で、クラウド同期はありません。第3段階までの保存されていなかった進行を、ページ更新後に自動で引き継ぐことはできません。保存は第4段階から有効です。
 
-エンディングは正式な復活後マップを使用し、基本衣装の星うさぎ、指定の本文・お礼、『Remember My Park』『おしまい』を表示。夜景の専用イラストは未配置です。届いたら `js/config.js` の `ending.image` に相対パスを指定するだけで差し替えられます。読み込み失敗時は正式な復活後マップへ戻ります。本文は `ending.paragraphs`、お礼は `ending.message`、全復活後のセリフは `guide.restoredMessage` です。
+エンディングは専用の夜景画像 `assets/maps/park-ending-night.png` を使用し、基本衣装の星うさぎ、指定の本文・お礼、『Remember My Park』『おしまい』を表示。通常の全景マップは従来どおり `park-before.png` と `park-after.png` を使用します。夜景の読み込み失敗時は正式な復活後マップへ戻ります。画像は `js/config.js` の `ending.image`、本文は `ending.paragraphs`、お礼は `ending.message`、全復活後のセリフは `guide.restoredMessage` です。
 
 ### 6問
 
@@ -80,6 +80,7 @@ node scripts/check.mjs
 | --- | --- |
 | 全景・復活前 | `assets/maps/park-before.png` |
 | 全景・復活後 | `assets/maps/park-after.png` |
+| エンディング専用・夜景 | `assets/maps/park-ending-night.png` |
 | 星うさぎ・基本衣装 | `assets/characters/star-bunny-base.png` |
 | メリーゴーランド衣装 | `assets/characters/star-bunny-carousel.png` |
 | 観覧車衣装 | `assets/characters/star-bunny-ferris-wheel.png` |
