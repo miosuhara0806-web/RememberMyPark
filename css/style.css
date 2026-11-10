@@ -48,9 +48,6 @@ h1:focus { outline: none; }
 .brand { display: flex; gap: 10px; align-items: center; font-size: 19px; font-weight: 700; color: #9f366e; line-height: 1.25; }
 .brand-star { display: grid; place-items: center; width: 42px; height: 42px; flex: none; border: 2px solid white; border-radius: 15px; background: #ffe9a7; box-shadow: 0 3px 0 #e9b96c; color: #b77615; font-size: 29px; transform: rotate(-9deg); }
 .brand small { display: block; margin-top: 5px; color: #80557b; font-size: 10px; letter-spacing: .07em; font-weight: 500; }
-.stage-tag { padding: 5px 12px; background: #fffaf1; border: 1px dashed #d9acc7; border-radius: 8px; color: #805c80; font-size: 10px; white-space: nowrap; }
-.stage-tag span { padding: 0 3px; }
-.stage-tag span:first-child { color: var(--gold); }
 main { max-width: 1090px; margin: 0 auto; padding: 0 38px; }
 
 .intro { position: relative; isolation: isolate; text-align: center; padding: 10px 0 25px; }
@@ -131,25 +128,6 @@ main { max-width: 1090px; margin: 0 auto; padding: 0 38px; }
 .facility-link b { font-size: 14px; white-space: nowrap; }
 .link-arrow { margin-left: auto; font-size: 18px; }
 
-.dev-panel { margin: 25px 0 29px; border: 2px solid #cdbce6; border-radius: 18px; background: #fffefe; box-shadow: 0 4px 0 #e7def6; }
-.dev-panel summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 53px; padding: 12px 19px; color: #695088; font-size: 13px; font-weight: 700; cursor: pointer; list-style: none; }
-.dev-panel summary::-webkit-details-marker { display: none; }
-.dev-badge { margin-right: 8px; padding: 3px 7px; border-radius: 6px; color: #655083; background: #eee5fc; font-size: 10px; }
-.summary-hint { color: #795d8c; font-size: 11px; font-weight: 500; }
-.summary-hint > span { margin-left: 7px; }
-.dev-content { margin: 0 18px; padding: 0 0 16px; border-top: 1px dashed #d8c7ea; }
-.dev-content > p:first-child { margin: 12px 0 8px; color: #70577e; font-size: 12px; }
-.dev-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.restoration-controls { display: flex; flex-wrap: wrap; gap: 8px; }
-.toggle-label { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 5px 10px; color: var(--theme); background: var(--theme-light); border: 1px solid var(--theme-border); border-radius: 12px; font-size: 12px; cursor: pointer; }
-.toggle-label input { appearance: none; position: relative; width: 34px; height: 20px; flex: none; margin: 0; border: 1px solid #bcabbf; border-radius: 20px; background: #e5dce7; cursor: pointer; transition: background .2s; }
-.toggle-label input::after { content: ""; position: absolute; left: 2px; top: 2px; width: 14px; height: 14px; border-radius: 50%; background: white; box-shadow: 0 1px 2px #8264913b; transition: transform .2s; }
-.toggle-label input:checked { border-color: var(--theme); background: var(--theme); }
-.toggle-label input:checked::after { transform: translateX(14px); }
-.text-button { min-height: 44px; padding: 6px 12px; border: 1px solid #d2bee6; border-radius: 20px; color: #71518e; background: #f5effc; white-space: nowrap; font-size: 11px; }
-.text-button span { margin-left: 4px; font-size: 16px; }
-.text-button:hover { background: #e9ddf6; }
-.asset-status { margin: 10px 0 0; color: #735e7d; font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
 footer { display: flex; justify-content: space-between; gap: 12px; max-width: 1090px; margin: auto; padding: 0 38px 26px; color: #725877; font-size: 11px; }
 footer span:first-child { color: #ae3f7c; font-weight: 700; }
 
@@ -192,7 +170,6 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
   .facility-link b { font-size: 12px; }
   .facility-link small { font-size: 8px; }
   .link-arrow { display: none; }
-  .dev-controls { flex-wrap: wrap; }
 }
 
 @media (max-width: 600px) {
@@ -200,9 +177,6 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
   .brand { gap: 7px; font-size: 14px; }
   .brand-star { width: 31px; height: 31px; border-radius: 11px; font-size: 23px; }
   .brand small { font-size: 8px; margin-top: 3px; letter-spacing: 0; }
-  .stage-tag { font-size: 8px; padding: 4px 6px; }
-  .stage-tag span:first-child { display: none; }
-  .stage-tag span { padding: 0; }
   main { padding: 0 13px; }
   .intro { padding: 1px 0 14px; }
   .intro-ribbon { margin: 4px 0 3px; padding: 3px 22px; font-size: 10px; }
@@ -247,19 +221,6 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
   .facility-link::before, .facility-link::after { width: 11px; height: 11px; }
   .facility-link::before { left: -7px; }
   .facility-link::after { right: -7px; }
-  .dev-panel { margin: 20px 0 23px; border-radius: 15px; }
-  .dev-panel summary { min-height: 49px; padding: 10px 11px; font-size: 12px; }
-  .dev-badge { margin-right: 4px; padding: 3px 5px; font-size: 9px; }
-  .summary-hint { font-size: 9px; }
-  .summary-hint > span { margin-left: 2px; }
-  .dev-content { margin: 0 11px; padding-bottom: 13px; }
-  .dev-content > p:first-child { font-size: 11px; }
-  .dev-controls { flex-direction: column; align-items: stretch; gap: 8px; }
-  .restoration-controls { flex-direction: column; gap: 6px; }
-  .toggle-label { font-size: 12px; min-height: 44px; padding: 5px 12px; }
-  .toggle-label input { margin-right: 3px; }
-  .text-button { align-self: flex-end; }
-  .asset-status { font-size: 10px; }
   footer { padding: 0 16px 20px; font-size: 9px; gap: 8px; }
   .facility-view { padding: 5px 0 30px; }
   .back-link { padding: 4px 13px; font-size: 12px; }
@@ -285,7 +246,6 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
   .site-header { padding-left: 12px; padding-right: 12px; }
   .brand { font-size: 12px; gap: 5px; }
   .brand small { font-size: 7px; }
-  .stage-tag { font-size: 7px; }
   .park-title { font-size: 27px; }
   .intro-ribbon { font-size: 9px; }
   .catch-copy { font-size: 15px; }
@@ -442,7 +402,6 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 /* 第4段階：自動保存・エンディング・誤操作を防ぐ初期化 */
 .save-status { margin: 8px 0 14px; padding: 7px 12px; text-align: center; color: #416854; background: #f0fff4; border: 1px solid #add3bd; border-radius: 13px; font-size: 12px; }
 .save-status.save-warning { background: #fff5db; color: #76521c; border-color: #d7b665; }
-.dev-preview-status { margin: 0 6px 10px; padding: 8px 12px; border: 2px dashed #8f73b4; border-radius: 12px; background: #fff3c9; color: #63447a; font-size: 12px; }
 .ending-invitation { text-align: center; margin: 27px 0; padding: 19px; background: #fff2cc; border: 2px dashed #d4ad56; border-radius: 23px; }
 .ending-invitation p { color: #925122; font-size: 14px; margin: 0 0 13px; }
 .restart-area { margin: 27px 0; text-align: center; }
