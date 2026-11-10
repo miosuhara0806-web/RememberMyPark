@@ -4,7 +4,6 @@
   const saved = window.ParkSave.load();
   let progress = saved.state;
   const restored = new Set(progress.restored);
-  let devRestored = null;
   let afterSource = config.images.fallbackAfter;
   const $ = (id) => document.getElementById(id);
   const icons = {
@@ -14,30 +13,41 @@
   };
   const icon = (key) => `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[key]}</svg>`;
 
+  const guideRequests = new WeakMap();
   function renderGuide(id, guide) {
     const container = $(id);
     const image = container.querySelector(".bunny-image");
     const fallback = container.querySelector(".bunny-fallback");
     container.querySelector(".bunny-message").textContent = guide.message;
     image.alt = guide.alt;
-    // 同じ画像を再表示する場合は、読み込みとちらつきを増やさない。
-    if (image.getAttribute("src") === guide.image) return;
+    // 読み込み中・表示済みの同じ画像は再利用し、失敗後の再訪では再試行する。
+    const previous = guideRequests.get(image);
+    if (previous?.source === guide.image && container.dataset.guideState !== "missing") return;
+    const request = { source: guide.image, loader: new Image() };
+    guideRequests.set(image, request);
     container.dataset.guideState = "loading";
     image.hidden = true;
     fallback.hidden = false;
-    image.onload = () => {
-      if (image.getAttribute("src") !== guide.image) return;
+    request.loader.onload = () => {
+      // 施設移動前の画像の完了通知で、今の案内を上書きしない。
+      if (guideRequests.get(image) !== request) return;
+      image.src = guide.image;
       image.hidden = false;
       fallback.hidden = true;
       container.dataset.guideState = "ready";
     };
-    image.onerror = () => {
-      if (image.getAttribute("src") !== guide.image) return;
+    request.loader.onerror = () => {
+      if (guideRequests.get(image) !== request) return;
       image.hidden = true;
       fallback.hidden = false;
       container.dataset.guideState = "missing";
     };
-    image.src = guide.image;
+    request.loader.src = guide.image;
+    // キャッシュ済み画像は、イベント待ちだけにせず表示状態を確定する。
+    if (request.loader.complete) {
+      if (request.loader.naturalWidth > 0) request.loader.onload();
+      else request.loader.onerror();
+    }
   }
 
   renderGuide("map-guide", config.guide);
@@ -58,27 +68,12 @@
     link.dataset.id = item.id;
     link.innerHTML = `${icon(item.icon)}<span><small>${item.number} / ${item.english}</small><b>${item.name}</b></span><span class="link-arrow" aria-hidden="true">↗</span>`;
     $("facility-links").append(link);
-
-    const label = document.createElement("label");
-    label.className = "toggle-label";
-    label.dataset.id = item.id;
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = item.id;
-    checkbox.addEventListener("change", () => {
-      if (!devRestored) devRestored = new Set(restored);
-      checkbox.checked ? devRestored.add(item.id) : devRestored.delete(item.id);
-      renderRestoration();
-      $("live-status").textContent = `DEVプレビュー：${item.name}を${checkbox.checked ? "復活させました" : "眠らせました"}。記録は変更していません。`;
-    });
-    label.append(checkbox, document.createTextNode(item.name));
-    $("restoration-controls").append(label);
   });
 
   function renderRestoration() {
     const container = $("restoration-layers");
     container.replaceChildren();
-    const visible = devRestored || restored;
+    const visible = restored;
     const all = visible.size === config.attractions.length;
     const regions = all ? [null] : config.attractions.filter((item) => visible.has(item.id));
     regions.forEach((item) => {
@@ -98,24 +93,13 @@
     $("progress").textContent = `あかり ${restored.size} / ${config.attractions.length}`;
     const normalComplete = restored.size === config.attractions.length;
     renderGuide("map-guide", { ...config.guide, message: normalComplete ? config.guide.restoredMessage : config.guide.message });
-    $("ending-invitation").hidden = !normalComplete || Boolean(devRestored);
-    $("dev-preview-status").hidden = !devRestored;
-    $("dev-preview-status").textContent = devRestored ? `DEVプレビュー ${visible.size}/3・保存されません。あかりの記録は ${restored.size}/3 のままです。` : "";
-    $("exit-preview").hidden = !devRestored;
-    document.querySelectorAll("#restoration-controls input").forEach(input => input.checked = visible.has(input.value));
+    $("ending-invitation").hidden = !normalComplete;
     document.querySelectorAll(".hotspot").forEach((element) => {
       const isRestored = visible.has(element.dataset.id);
       element.classList.toggle("is-restored", isRestored);
       element.querySelector(".hotspot-spark").textContent = isRestored ? "✦" : "✧";
     });
   }
-
-  $("reset").addEventListener("click", () => {
-    devRestored = new Set();
-    renderRestoration();
-    $("live-status").textContent = "DEVプレビューのあかりだけを眠らせました。記録は変更していません。";
-  });
-  $("exit-preview").addEventListener("click", () => { devRestored = null; renderRestoration(); });
 
   function writeProgress() {
     const ok = window.ParkSave.write(progress);
@@ -129,7 +113,6 @@
     progress.lightCount = progress.restored.length;
     restored.clear();
     progress.restored.forEach(id => restored.add(id));
-    devRestored = null;
     writeProgress();
     renderRestoration();
   }
@@ -165,7 +148,6 @@
     progress = empty;
     game.reset(progress.facilities);
     restored.clear();
-    devRestored = null;
     $("restart-dialog").close();
     $("save-status").classList.remove("save-warning");
     $("save-status").textContent = "記録を初期化しました。あかり0/3から、もう一度遊べます。";
@@ -199,7 +181,7 @@
     $("map-view").hidden = Boolean(item) || isEnding;
     $("facility-view").hidden = !item;
     $("ending-view").hidden = !isEnding;
-    if (item || isEnding) { devRestored = null; renderRestoration(); }
+    if (item || isEnding) renderRestoration();
     if (item) {
       $("facility-view").dataset.theme = item.id;
       $("facility-title").textContent = item.name;
@@ -236,7 +218,6 @@
       const [before, after] = await Promise.all([loadImage(config.images.before), loadImage(config.images.after)]);
       const ratio = before.naturalWidth / before.naturalHeight;
       if (Math.abs(ratio - after.naturalWidth / after.naturalHeight) > 0.001) {
-        $("asset-status").textContent = "前後画像の縦横比が異なるため、仮マップを表示中です。同じ構図・縦横比の画像に揃えてください。";
         return;
       }
       $("map-before").src = before.src;
@@ -245,10 +226,9 @@
       $("park-map").style.aspectRatio = String(ratio);
       afterSource = after.src;
       $("map-caption").textContent = "全景マップ";
-      $("asset-status").textContent = "前後の画像を読み込みました。復活エリアの位置と構図の重なりを確認してください。";
       renderRestoration();
     } catch {
-      $("asset-status").textContent = "現在は仮マップです。assets/maps に park-before.png と park-after.png を両方置くと切り替わります。";
+      // 読み込めない場合も、前後を揃えた代替マップで操作を続けられる。
     }
   }
   renderRestoration();
