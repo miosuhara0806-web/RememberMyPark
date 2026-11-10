@@ -233,13 +233,17 @@ footer span:first-child { color: #ae3f7c; font-weight: 700; }
   .facility-card h1 { padding: 3px 21px 5px; font-size: 23px; }
   .facility-hero > p { font-size: 12px; margin: 11px 0 17px; }
   .facility-body { padding: 15px 12px; border-radius: 17px; }
+  .pill { font-size: 10px; padding: 3px 11px; }
+  .puzzle-notice p { font-size: 11px; }
+  .primary-button { padding: 11px 19px; font-size: 13px; gap: 12px; }
+}
+
+/* 施設案内は、画像と吹き出しの両方に幅を確保できるまで縦に並べる。 */
+@media (max-width: 760px) {
   .facility-guide { grid-template-columns: minmax(0, 1fr); gap: 17px; }
   .facility-guide .bunny-portrait { grid-column: 1; grid-row: 1; max-width: 245px; }
   .facility-guide .bunny-speech { grid-column: 1; grid-row: 2; }
   .facility-guide .bunny-speech::before { top: -11px; left: calc(50% - 10px); right: auto; border: 0; border-left: 2px solid var(--theme-border); border-top: 2px solid var(--theme-border); }
-  .pill { font-size: 10px; padding: 3px 11px; }
-  .puzzle-notice p { font-size: 11px; }
-  .primary-button { padding: 11px 19px; font-size: 13px; gap: 12px; }
 }
 
 @media (max-width: 360px) {

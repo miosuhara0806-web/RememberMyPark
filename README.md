@@ -108,7 +108,7 @@ scripts/check-puzzles.mjs       全候補・全経路・ヒントの検証
 assets/                        検収済み正式画像・仮マップ・ローカルフォント
 ```
 
-フォントのライセンスは `assets/fonts/OFL.txt`。過去の確認記録は `docs/stage-1-checks.md`、`docs/ui-retake-checks.md`、`docs/star-bunny-checks.md` に保持。今回変更したCSS・アプリ処理のキャッシュ対策は `index.html` の `v=release-1-0` です。
+フォントのライセンスは `assets/fonts/OFL.txt`。過去の確認記録は `docs/stage-1-checks.md`、`docs/ui-retake-checks.md`、`docs/star-bunny-checks.md` に保持。キャッシュ対策は `index.html` のCSSが `v=release-1-1`、アプリ処理が `v=release-1-0` です。施設案内の幅による表示切り替えと追加検証は `docs/release-1-checks.md` を参照してください。
 
 ### Gitと公開状況
 
