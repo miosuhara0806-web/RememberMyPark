@@ -176,6 +176,7 @@
     $("ending-story").append(p);
   });
 
+  const endingView = $("ending-view");
   const nightView = $("ending-video-view");
   const nightVideo = $("ending-video");
   const nightBackground = $("ending-video-background");
@@ -183,7 +184,9 @@
   const nightLoading = $("ending-video-loading");
   const replayNight = $("replay-ending-video");
   const skipNight = $("skip-ending-video");
+  const endingTransition = $("ending-transition");
   let nightPlayback;
+  let endingFade;
 
   function focusView(element) {
     element.focus({ preventScroll: true });
@@ -192,22 +195,20 @@
 
   function showNightView() {
     if (!nightBackground.hasAttribute("src")) loadEndingImage(nightBackground);
-    $("ending-view").hidden = true;
+    endingView.hidden = true;
     nightView.hidden = false;
     document.title = "夜の遊園地｜Remember My Park";
   }
 
-  function showStaticEnding({ focus = true, returnToReplay = false, failed = false } = {}) {
+  function showStaticEnding({ focus = true, reveal = false, failed = false } = {}) {
     nightView.hidden = true;
-    $("ending-view").hidden = false;
+    endingView.classList.toggle("is-revealing", reveal);
+    endingView.hidden = false;
     $("ending-video-error").hidden = !failed;
     renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
     document.title = "おしまい｜Remember My Park";
     if (!progress.endingReached) { progress.endingReached = true; writeProgress(); }
-    if (focus) {
-      if (returnToReplay && !failed) replayNight.focus();
-      else focusView($("ending-title"));
-    }
+    if (focus) focusView($("ending-title"));
   }
 
   function stopNightPlayback() {
@@ -224,15 +225,44 @@
     nightInvitation.hidden = false;
   }
 
-  function finishNightVideo(failed = false) {
-    if (nightView.hidden) return;
-    const returnToReplay = progress.endingReached;
-    stopNightPlayback();
-    showStaticEnding({ returnToReplay, failed });
+  function clearEndingFade() {
+    endingFade?.cancel();
+    endingFade = undefined;
+    endingTransition.hidden = true;
+  }
+
+  async function finishNightVideo(failed = false) {
+    if (nightView.hidden || endingFade) return;
+    if (failed || matchMedia("(prefers-reduced-motion: reduce)").matches || !endingTransition.animate) {
+      stopNightPlayback();
+      showStaticEnding({ failed });
+      return;
+    }
+
+    // スキップ時はすぐに音を止め、画面が暗くなるまでその場面を残す。
+    nightPlayback?.abort();
+    nightVideo.pause();
+    nightLoading.hidden = true;
+    endingTransition.hidden = false;
+    const dim = endingTransition.animate({ opacity: [0, 1] }, { duration: 420, easing: "ease-in-out", fill: "forwards" });
+    endingFade = dim;
+    try {
+      await dim.finished;
+      // 構図の違う映像と全景は、紺色の幕で覆っている間に切り替える。
+      stopNightPlayback();
+      showStaticEnding({ reveal: true });
+      const reveal = endingTransition.animate({ opacity: [1, 0] }, { duration: 620, easing: "ease-in-out", fill: "forwards" });
+      endingFade = reveal;
+      dim.cancel();
+      await reveal.finished;
+      clearEndingFade();
+    } catch (error) {
+      if (error.name !== "AbortError") throw error;
+    }
   }
 
   function playNightVideo() {
-    if (nightPlayback) return;
+    if (nightPlayback || endingFade) return;
     showNightView();
     nightInvitation.hidden = true;
     nightVideo.hidden = false;
@@ -268,6 +298,7 @@
   skipNight.addEventListener("click", () => finishNightVideo());
 
   function route(focus = true) {
+    clearEndingFade();
     stopNightPlayback();
     let id = window.location.hash.slice(1);
     if (id === "ending" && restored.size !== config.attractions.length) {
@@ -279,7 +310,7 @@
     $("map-view").hidden = Boolean(item) || isEnding;
     $("facility-view").hidden = !item;
     nightView.hidden = true;
-    $("ending-view").hidden = true;
+    endingView.hidden = true;
     if (item || isEnding) renderRestoration();
     if (item) {
       $("facility-view").dataset.theme = item.id;
