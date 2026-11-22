@@ -15,6 +15,7 @@ window.PARK_CONFIG = {
   ending: {
     // エンディング専用の夜景。読み込み失敗時は正式な復活後マップを使用する。
     image: "assets/maps/park-ending-night.png",
+    video: "assets/videos/remember-my-park-night-web.mp4",
     paragraphs: [
       "忘れられていた遊園地に、もう一度あかりが灯りました。",
       "木馬たちが回り、観覧車が空を彩り、小さな列車が走り出します。",

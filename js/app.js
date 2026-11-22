@@ -158,19 +158,117 @@
 
   // 専用画像 → 正式な復活後マップ → 仮マップの順にフォールバックする。
   const endingSources = [...new Set([config.ending.image, config.images.after, config.images.fallbackAfter].filter(Boolean))];
-  let endingImageIndex = 0;
-  $("ending-image").onerror = () => {
-    if (++endingImageIndex < endingSources.length) $("ending-image").src = endingSources[endingImageIndex];
-    else { $("ending-image").hidden = true; $("ending-image-status").textContent = "画像を読み込めませんでした。星うさぎと、お話の続きを楽しんでね。"; }
-  };
-  $("ending-image").src = endingSources[0];
+  function loadEndingImage(image, status) {
+    let index = 0;
+    image.onerror = () => {
+      if (++index < endingSources.length) image.src = endingSources[index];
+      else {
+        image.hidden = true;
+        if (status) status.textContent = "画像を読み込めませんでした。星うさぎと、お話の続きを楽しんでね。";
+      }
+    };
+    image.src = endingSources[0];
+  }
+  loadEndingImage($("ending-image"), $("ending-image-status"));
   config.ending.paragraphs.forEach(text => {
     const p = document.createElement("p");
     p.textContent = text;
     $("ending-story").append(p);
   });
 
+  const nightView = $("ending-video-view");
+  const nightVideo = $("ending-video");
+  const nightBackground = $("ending-video-background");
+  const nightInvitation = $("ending-video-invitation");
+  const nightLoading = $("ending-video-loading");
+  const replayNight = $("replay-ending-video");
+  const skipNight = $("skip-ending-video");
+  let nightPlayback;
+
+  function focusView(element) {
+    element.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  function showNightView() {
+    if (!nightBackground.hasAttribute("src")) loadEndingImage(nightBackground);
+    $("ending-view").hidden = true;
+    nightView.hidden = false;
+    document.title = "夜の遊園地｜Remember My Park";
+  }
+
+  function showStaticEnding({ focus = true, returnToReplay = false, failed = false } = {}) {
+    nightView.hidden = true;
+    $("ending-view").hidden = false;
+    $("ending-video-error").hidden = !failed;
+    renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
+    document.title = "おしまい｜Remember My Park";
+    if (!progress.endingReached) { progress.endingReached = true; writeProgress(); }
+    if (focus) {
+      if (returnToReplay && !failed) replayNight.focus();
+      else focusView($("ending-title"));
+    }
+  }
+
+  function stopNightPlayback() {
+    if (!nightPlayback) return;
+    // 画面を離れた再生のイベントで、次の画面や再生を切り替えない。
+    nightPlayback.abort();
+    nightPlayback = undefined;
+    nightVideo.pause();
+    nightVideo.removeAttribute("src");
+    nightVideo.load();
+    nightVideo.classList.remove("is-playing");
+    nightVideo.hidden = true;
+    nightLoading.hidden = true;
+    nightInvitation.hidden = false;
+  }
+
+  function finishNightVideo(failed = false) {
+    if (nightView.hidden) return;
+    const returnToReplay = progress.endingReached;
+    stopNightPlayback();
+    showStaticEnding({ returnToReplay, failed });
+  }
+
+  function playNightVideo() {
+    if (nightPlayback) return;
+    showNightView();
+    nightInvitation.hidden = true;
+    nightVideo.hidden = false;
+    focusView(skipNight);
+
+    nightPlayback = new AbortController();
+    const { signal } = nightPlayback;
+    const fail = () => { if (!signal.aborted) finishNightVideo(true); };
+    let loadingTimeout;
+    const stopWaiting = () => clearTimeout(loadingTimeout);
+    const waitForVideo = () => {
+      nightLoading.hidden = false;
+      stopWaiting();
+      loadingTimeout = setTimeout(fail, 20000);
+    };
+    signal.addEventListener("abort", stopWaiting, { once: true });
+    nightVideo.addEventListener("waiting", waitForVideo, { signal });
+    nightVideo.addEventListener("playing", () => {
+      stopWaiting();
+      nightLoading.hidden = true;
+      nightVideo.classList.add("is-playing");
+    }, { signal });
+    nightVideo.addEventListener("ended", () => finishNightVideo(), { signal });
+    nightVideo.addEventListener("error", fail, { signal });
+    waitForVideo();
+    // iOSの音声付きインライン再生のため、ユーザー操作内で同期的に再生を要求する。
+    nightVideo.src = config.ending.video;
+    nightVideo.play().catch(fail);
+  }
+
+  $("play-ending-video").addEventListener("click", playNightVideo);
+  replayNight.addEventListener("click", playNightVideo);
+  skipNight.addEventListener("click", () => finishNightVideo());
+
   function route(focus = true) {
+    stopNightPlayback();
     let id = window.location.hash.slice(1);
     if (id === "ending" && restored.size !== config.attractions.length) {
       history.replaceState(null, "", "#map");
@@ -180,7 +278,8 @@
     const item = config.attractions.find((entry) => entry.id === id);
     $("map-view").hidden = Boolean(item) || isEnding;
     $("facility-view").hidden = !item;
-    $("ending-view").hidden = !isEnding;
+    nightView.hidden = true;
+    $("ending-view").hidden = true;
     if (item || isEnding) renderRestoration();
     if (item) {
       $("facility-view").dataset.theme = item.id;
@@ -191,16 +290,16 @@
       game.open(item);
       document.title = `${item.name}｜Remember My Park`;
     } else if (isEnding) {
-      renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
-      document.title = "おしまい｜Remember My Park";
-      if (!progress.endingReached) { progress.endingReached = true; writeProgress(); }
+      if (progress.endingReached) showStaticEnding({ focus });
+      else {
+        showNightView();
+        if (focus) focusView($("ending-video-title"));
+      }
+      return;
     } else {
       document.title = "Remember My Park｜眠っていた遊園地";
     }
-    if (focus) {
-      (item ? $("facility-title") : isEnding ? $("ending-title") : $("map-title")).focus({ preventScroll: true });
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
+    if (focus) focusView(item ? $("facility-title") : $("map-title"));
   }
   window.addEventListener("hashchange", () => route());
   route(false);
