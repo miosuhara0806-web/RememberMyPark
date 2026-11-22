@@ -206,7 +206,6 @@
     nightView.hidden = true;
     endingView.classList.toggle("is-revealing", reveal);
     endingView.classList.toggle("is-aligning", align);
-    endingView.classList.remove("is-showing-story");
     endingView.hidden = false;
     $("ending-video-error").hidden = !failed;
     renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
@@ -235,45 +234,17 @@
     endingTransition.hidden = true;
   }
 
-  function canShowEndingLight() {
-    return !reducedMotion.matches && typeof endingTransition.animate === "function";
-  }
-
-  async function playEndingLight({ delay = 0, atPeak } = {}) {
-    const peakOpacity = .88;
-    const easing = "ease-in-out";
-    endingTransition.hidden = false;
-    const brighten = endingTransition.animate({ opacity: [0, peakOpacity] }, { duration: 340, delay, easing, fill: "both" });
-    endingAnimation = brighten;
-    try {
-      await brighten.finished;
-      atPeak?.();
-      endingView.classList.add("is-showing-story");
-      const clear = endingTransition.animate({ opacity: [peakOpacity, 0] }, { duration: 520, easing, fill: "both" });
-      endingAnimation = clear;
-      brighten.cancel();
-      await clear.finished;
-      clearEndingAnimation();
-    } catch (error) {
-      if (error.name !== "AbortError") throw error;
-    }
-  }
-
   function endNightVideo() {
-    const glow = canShowEndingLight();
     const from = nightVideo.getBoundingClientRect();
     const fromRadius = parseFloat(getComputedStyle(nightVideo.parentElement).borderTopLeftRadius);
-    const align = glow && typeof endingImage.animate === "function"
+    const align = !reducedMotion.matches && typeof endingImage.animate === "function"
       && endingImage.complete && endingImage.naturalWidth > 0
       && endingImage.getAttribute("src") === config.ending.image && from.width > 0 && from.height > 0;
     stopNightPlayback();
-    showStaticEnding({ reveal: glow, align });
-    if (align) alignEndingImage(from, fromRadius);
-    if (glow) playEndingLight({ delay: align ? 300 : 0 });
-  }
+    showStaticEnding({ reveal: true, align });
 
-  function alignEndingImage(from, fromRadius) {
     // 動画の最後は全景が少し寄った構図。静止画をその位置と切り抜きから元の枠へ戻す。
+    if (!align) return;
     const to = endingImage.getBoundingClientRect();
     if (!to.width || !to.height) return;
     const { top, right, bottom, left } = config.ending.videoLastFrameCrop;
@@ -289,27 +260,41 @@
       },
       { transform: "none", clipPath: `inset(0% round ${toRadius} / ${toRadius})` }
     ];
-    endingImage.animate(frames.map(frame => ({ ...frame, transformOrigin: "top left" })), {
+    const animation = endingImage.animate(frames.map(frame => ({ ...frame, transformOrigin: "top left" })), {
       duration: 640, easing: "ease-in-out", fill: "backwards"
     });
+    endingAnimation = animation;
+    animation.onfinish = () => { if (endingAnimation === animation) endingAnimation = undefined; };
   }
 
-  function leaveNightVideo(failed = false) {
+  async function leaveNightVideo(failed = false) {
     if (nightView.hidden || endingAnimation) return;
-    if (failed || !canShowEndingLight()) {
+    if (failed || reducedMotion.matches || !endingTransition.animate) {
       stopNightPlayback();
       showStaticEnding({ failed });
       return;
     }
 
-    // 音をすぐに止め、光がいちばん明るいところで途中の映像から全景へ切り替える。
+    // スキップ時はすぐに音を止め、画面が暗くなるまでその場面を残す。
     nightPlayback?.abort();
     nightVideo.pause();
     nightLoading.hidden = true;
-    playEndingLight({ atPeak() {
+    endingTransition.hidden = false;
+    const dim = endingTransition.animate({ opacity: [0, 1] }, { duration: 420, easing: "ease-in-out", fill: "forwards" });
+    endingAnimation = dim;
+    try {
+      await dim.finished;
+      // 構図の違う映像と全景は、紺色の幕で覆っている間に切り替える。
       stopNightPlayback();
       showStaticEnding({ reveal: true });
-    } });
+      const reveal = endingTransition.animate({ opacity: [1, 0] }, { duration: 620, easing: "ease-in-out", fill: "forwards" });
+      endingAnimation = reveal;
+      dim.cancel();
+      await reveal.finished;
+      clearEndingAnimation();
+    } catch (error) {
+      if (error.name !== "AbortError") throw error;
+    }
   }
 
   function playNightVideo() {
@@ -350,7 +335,6 @@
 
   function route(focus = true) {
     clearEndingAnimation();
-    endingImage.getAnimations?.().forEach(animation => animation.cancel());
     stopNightPlayback();
     let id = window.location.hash.slice(1);
     if (id === "ending" && restored.size !== config.attractions.length) {

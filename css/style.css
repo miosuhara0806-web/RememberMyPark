@@ -452,15 +452,14 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 #ending-video-loading { margin: 8px 0 0; color: var(--muted); }
 .ending-video-replay { margin-top: 18px; }
 .ending-video-error { color: var(--muted); }
-.ending-transition { position: fixed; inset: 0; z-index: 10; background: radial-gradient(ellipse at 50% 42%, #fffdfa, #fff3e2); opacity: 0; pointer-events: none; }
+.ending-transition { position: fixed; inset: 0; z-index: 10; background: #20243c; opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
   .ending-video-view, .ending-view:not(.is-revealing) { animation: ending-fade-in .35s ease both; }
   .ending-view.is-aligning .ending-card::before,
   .ending-view.is-aligning .ending-landscape::before,
   .ending-view.is-aligning :is(.back-link, .ending-video-replay) { animation: ending-fade-in .6s ease both; }
-  .ending-view.is-revealing :is(.ending-ribbon, #ending-title, .ending-story, .ending-guide, .ending-signoff) { opacity: 0; }
-  .ending-view.is-showing-story :is(.ending-ribbon, #ending-title) { animation: ending-fade-in .36s ease .12s both; }
-  .ending-view.is-showing-story :is(.ending-story, .ending-guide, .ending-signoff) { animation: ending-fade-in .42s ease .20s both; }
+  .ending-view.is-revealing :is(.ending-ribbon, #ending-title) { animation: ending-fade-in .42s ease .48s both; }
+  .ending-view.is-revealing :is(.ending-story, .ending-guide, .ending-signoff) { animation: ending-fade-in .47s ease .61s both; }
   @keyframes ending-fade-in { from { opacity: 0; } to { opacity: 1; } }
 }
 @media (prefers-reduced-motion: reduce) {
