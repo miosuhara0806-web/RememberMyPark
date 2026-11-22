@@ -404,8 +404,10 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 }
 
 /* 第4段階：自動保存・エンディング・誤操作を防ぐ初期化 */
-.save-status { margin: 8px 0 14px; padding: 7px 12px; text-align: center; color: #416854; background: #f0fff4; border: 1px solid #add3bd; border-radius: 13px; font-size: 12px; }
+.save-notice { margin: 8px 0 14px; }
+.save-status { margin: 0; padding: 7px 12px; text-align: center; color: #416854; background: #f0fff4; border: 1px solid #add3bd; border-radius: 13px; font-size: 12px; }
 .save-status.save-warning { background: #fff5db; color: #76521c; border-color: #d7b665; }
+.save-browser-note { margin: 5px 0 0; text-align: center; color: var(--muted); font-size: 12px; }
 .ending-invitation { text-align: center; margin: 27px 0; padding: 19px; background: #fff2cc; border: 2px dashed #d4ad56; border-radius: 23px; }
 .ending-invitation p { color: #925122; font-size: 14px; margin: 0 0 13px; }
 .restart-area { margin: 27px 0; text-align: center; }

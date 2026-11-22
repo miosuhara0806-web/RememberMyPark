@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="application-name" content="Remember My Park">
   <meta name="apple-mobile-web-app-title" content="Remember My Park">
-  <link rel="stylesheet" href="css/style.css?v=night-video-3">
+  <link rel="stylesheet" href="css/style.css?v=night-video-release-1">
   <script src="js/config.js?v=night-video-3" defer></script>
   <script src="js/puzzles.js?v=stage-4-1" defer></script>
   <script src="js/save.js?v=stage-4-1" defer></script>
@@ -23,7 +23,10 @@
     <a class="brand" href="#map" aria-label="Remember My Park 全景マップ"><span class="brand-star" aria-hidden="true">✦</span><span>Remember My Park<small>リメンバー・マイ・パーク</small></span></a>
   </header>
   <main>
-    <p id="save-status" class="save-status" role="status">進み具合は、このブラウザーに自動保存されます。</p>
+    <div class="save-notice">
+      <p id="save-status" class="save-status" role="status">進み具合は、このブラウザーに自動保存されます。</p>
+      <p class="save-browser-note">続きから遊ぶときは、前回と同じブラウザーで開いてください。アプリ内ブラウザーと通常のブラウザーでは、進み具合が引き継がれないことがあります。</p>
+    </div>
     <section id="map-view" aria-labelledby="map-title">
       <div class="intro">
         <div class="bunting" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
