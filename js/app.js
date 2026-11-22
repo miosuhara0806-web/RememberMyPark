@@ -169,7 +169,8 @@
     };
     image.src = endingSources[0];
   }
-  loadEndingImage($("ending-image"), $("ending-image-status"));
+  const endingImage = $("ending-image");
+  loadEndingImage(endingImage, $("ending-image-status"));
   config.ending.paragraphs.forEach(text => {
     const p = document.createElement("p");
     p.textContent = text;
@@ -185,8 +186,9 @@
   const replayNight = $("replay-ending-video");
   const skipNight = $("skip-ending-video");
   const endingTransition = $("ending-transition");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
   let nightPlayback;
-  let endingFade;
+  let endingAnimation;
 
   function focusView(element) {
     element.focus({ preventScroll: true });
@@ -200,9 +202,10 @@
     document.title = "夜の遊園地｜Remember My Park";
   }
 
-  function showStaticEnding({ focus = true, reveal = false, failed = false } = {}) {
+  function showStaticEnding({ focus = true, reveal = false, align = false, failed = false } = {}) {
     nightView.hidden = true;
     endingView.classList.toggle("is-revealing", reveal);
+    endingView.classList.toggle("is-aligning", align);
     endingView.hidden = false;
     $("ending-video-error").hidden = !failed;
     renderGuide("ending-guide", { ...config.guide, message: config.ending.message });
@@ -225,15 +228,48 @@
     nightInvitation.hidden = false;
   }
 
-  function clearEndingFade() {
-    endingFade?.cancel();
-    endingFade = undefined;
+  function clearEndingAnimation() {
+    endingAnimation?.cancel();
+    endingAnimation = undefined;
     endingTransition.hidden = true;
   }
 
-  async function finishNightVideo(failed = false) {
-    if (nightView.hidden || endingFade) return;
-    if (failed || matchMedia("(prefers-reduced-motion: reduce)").matches || !endingTransition.animate) {
+  function endNightVideo() {
+    const from = nightVideo.getBoundingClientRect();
+    const fromRadius = parseFloat(getComputedStyle(nightVideo.parentElement).borderTopLeftRadius);
+    const align = !reducedMotion.matches && typeof endingImage.animate === "function"
+      && endingImage.complete && endingImage.naturalWidth > 0
+      && endingImage.getAttribute("src") === config.ending.image && from.width > 0 && from.height > 0;
+    stopNightPlayback();
+    showStaticEnding({ reveal: true, align });
+
+    // 動画の最後は全景が少し寄った構図。静止画をその位置と切り抜きから元の枠へ戻す。
+    if (!align) return;
+    const to = endingImage.getBoundingClientRect();
+    if (!to.width || !to.height) return;
+    const { top, right, bottom, left } = config.ending.videoLastFrameCrop;
+    const scaleX = from.width / (to.width * (1 - left - right));
+    const scaleY = from.height / (to.height * (1 - top - bottom));
+    const x = from.left - to.left - left * to.width * scaleX;
+    const y = from.top - to.top - top * to.height * scaleY;
+    const toRadius = getComputedStyle(endingImage).borderTopLeftRadius;
+    const frames = [
+      {
+        transform: `translate(${x}px, ${y}px) scale(${scaleX}, ${scaleY})`,
+        clipPath: `inset(${top * 100}% ${right * 100}% ${bottom * 100}% ${left * 100}% round ${fromRadius / scaleX}px / ${fromRadius / scaleY}px)`
+      },
+      { transform: "none", clipPath: `inset(0% round ${toRadius} / ${toRadius})` }
+    ];
+    const animation = endingImage.animate(frames.map(frame => ({ ...frame, transformOrigin: "top left" })), {
+      duration: 640, easing: "ease-in-out", fill: "backwards"
+    });
+    endingAnimation = animation;
+    animation.onfinish = () => { if (endingAnimation === animation) endingAnimation = undefined; };
+  }
+
+  async function leaveNightVideo(failed = false) {
+    if (nightView.hidden || endingAnimation) return;
+    if (failed || reducedMotion.matches || !endingTransition.animate) {
       stopNightPlayback();
       showStaticEnding({ failed });
       return;
@@ -245,24 +281,24 @@
     nightLoading.hidden = true;
     endingTransition.hidden = false;
     const dim = endingTransition.animate({ opacity: [0, 1] }, { duration: 420, easing: "ease-in-out", fill: "forwards" });
-    endingFade = dim;
+    endingAnimation = dim;
     try {
       await dim.finished;
       // 構図の違う映像と全景は、紺色の幕で覆っている間に切り替える。
       stopNightPlayback();
       showStaticEnding({ reveal: true });
       const reveal = endingTransition.animate({ opacity: [1, 0] }, { duration: 620, easing: "ease-in-out", fill: "forwards" });
-      endingFade = reveal;
+      endingAnimation = reveal;
       dim.cancel();
       await reveal.finished;
-      clearEndingFade();
+      clearEndingAnimation();
     } catch (error) {
       if (error.name !== "AbortError") throw error;
     }
   }
 
   function playNightVideo() {
-    if (nightPlayback || endingFade) return;
+    if (nightPlayback || endingAnimation) return;
     showNightView();
     nightInvitation.hidden = true;
     nightVideo.hidden = false;
@@ -270,7 +306,7 @@
 
     nightPlayback = new AbortController();
     const { signal } = nightPlayback;
-    const fail = () => { if (!signal.aborted) finishNightVideo(true); };
+    const fail = () => { if (!signal.aborted) leaveNightVideo(true); };
     let loadingTimeout;
     const stopWaiting = () => clearTimeout(loadingTimeout);
     const waitForVideo = () => {
@@ -285,7 +321,7 @@
       nightLoading.hidden = true;
       nightVideo.classList.add("is-playing");
     }, { signal });
-    nightVideo.addEventListener("ended", () => finishNightVideo(), { signal });
+    nightVideo.addEventListener("ended", endNightVideo, { signal });
     nightVideo.addEventListener("error", fail, { signal });
     waitForVideo();
     // iOSの音声付きインライン再生のため、ユーザー操作内で同期的に再生を要求する。
@@ -295,10 +331,10 @@
 
   $("play-ending-video").addEventListener("click", playNightVideo);
   replayNight.addEventListener("click", playNightVideo);
-  skipNight.addEventListener("click", () => finishNightVideo());
+  skipNight.addEventListener("click", () => leaveNightVideo());
 
   function route(focus = true) {
-    clearEndingFade();
+    clearEndingAnimation();
     stopNightPlayback();
     let id = window.location.hash.slice(1);
     if (id === "ending" && restored.size !== config.attractions.length) {

@@ -411,10 +411,13 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 .restart-area { margin: 27px 0; text-align: center; }
 .restart-area p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
 .ending-view { padding: 12px 0 35px; }
-.ending-card { position: relative; margin-top: 22px; padding: 28px; border: 3px solid #eaa5cb; border-radius: 28px; background: linear-gradient(160deg, #fff4fc, #f0f5ff 60%, #edfff4); box-shadow: 0 6px 0 #f4cce3; text-align: center; }
+.ending-card { --ending-border: 3px; position: relative; isolation: isolate; margin-top: 22px; padding: 28px; border: var(--ending-border) solid transparent; border-radius: 28px; text-align: center; }
+.ending-card::before, .ending-landscape::before { content: ""; position: absolute; z-index: -1; border-radius: inherit; pointer-events: none; }
+.ending-card::before { inset: calc(-1 * var(--ending-border)); border: var(--ending-border) solid #eaa5cb; background: linear-gradient(160deg, #fff4fc, #f0f5ff 60%, #edfff4); box-shadow: 0 6px 0 #f4cce3; }
 .ending-ribbon { display: inline-block; margin: 0; padding: 7px 22px; color: #905324; background: #ffe3a1; border-radius: 8px 8px 18px 18px; }
 .ending-card h1 { color: var(--pink); margin: 18px 0 25px; font-size: clamp(23px, 4.5vw, 34px); }
-.ending-landscape { margin: 0; padding: 8px; border: 2px solid #e7bcda; border-radius: 22px; background: white; box-shadow: 0 5px 0 #e8ddf1; }
+.ending-landscape { position: relative; isolation: isolate; margin: 0; padding: 8px; border: 2px solid transparent; border-radius: 22px; }
+.ending-landscape::before { inset: -2px; border: 2px solid #e7bcda; background: white; box-shadow: 0 5px 0 #e8ddf1; }
 .ending-landscape img { display: block; width: 100%; height: auto; border-radius: 14px; }
 .ending-landscape figcaption:empty { display: none; }
 .ending-story { max-width: 600px; margin: 28px auto; padding: 6px 0; }
@@ -452,6 +455,9 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 .ending-transition { position: fixed; inset: 0; z-index: 10; background: #20243c; opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
   .ending-video-view, .ending-view:not(.is-revealing) { animation: ending-fade-in .35s ease both; }
+  .ending-view.is-aligning .ending-card::before,
+  .ending-view.is-aligning .ending-landscape::before,
+  .ending-view.is-aligning :is(.back-link, .ending-video-replay) { animation: ending-fade-in .6s ease both; }
   .ending-view.is-revealing :is(.ending-ribbon, #ending-title) { animation: ending-fade-in .42s ease .48s both; }
   .ending-view.is-revealing :is(.ending-story, .ending-guide, .ending-signoff) { animation: ending-fade-in .47s ease .61s both; }
   @keyframes ending-fade-in { from { opacity: 0; } to { opacity: 1; } }
@@ -468,7 +474,7 @@ button:disabled { cursor: default; opacity: .58; transform: none; }
 #restart-error { color: #8d4520; background: #fff0c2; padding: 10px; border-radius: 10px; }
 @media (max-width: 600px) {
   .save-status { font-size: 11px; }
-  .ending-card { padding: 20px 11px; border-width: 2px; }
+  .ending-card { --ending-border: 2px; padding: 20px 11px; }
   .ending-ribbon { padding: 6px 12px; font-size: 12px; }
   .ending-landscape { padding: 5px; border-radius: 16px; }
   .ending-story p { font-size: 14px; text-align: left; }
